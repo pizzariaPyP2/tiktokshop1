@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loja TikTok Shop</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- MercadoPago -->
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+
+  <!-- QRCode -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+</head>
+<body>
+
+  <header>
+    <img src="https://i.im.ge/2026/01/20/GYhUgy.tiktok.png" class="tiktok-icon" alt="TikTok" />
+    <h1>TikTok Shop</h1>
+    <img src="https://i.im.ge/2026/01/20/GY9qLJ.ttkshop2-Photoroom.png" class="shop-icon" alt="Shop" />
+  </header>
+
+  <section class="trust-bar">
+    <div>🔒 Pagamento Seguro</div>
+    <div>🚚 Entrega Garantida</div>
+    <div>🔁 Devolução Fácil</div>
+    <div>💬 Suporte WhatsApp</div>
+  </section>
+
+  <main>
+    <section class="produtos">
+      <h2>🔥Destaques</h2>
+      <div class="lista-produtos" id="lista-produtos"></div>
+    </section>
+
+    <section class="produtos">
+      <h2>🏍️ Todos os capacetes</h2>
+      <div class="lista-produtos" id="lista-mais-vendidos"></div>
+    </section>
+
+    <section class="reviews">
+      <div class="reviews-head">
+        <h2>⭐ Avaliações Reais</h2>
+        <span class="reviews-sub">Clientes verificados • Compra via PIX</span>
+      </div>
+
+      <div class="reviews-proof">
+        <div class="proof-left">
+          <div class="proof-score">4.9</div>
+          <div class="proof-stars">★★★★★</div>
+          <div class="proof-sub">Baseado em 1.200+ compras</div>
+        </div>
+
+        <div class="proof-right">
+          <div class="proof-pill">⚡ PIX confirma na hora</div>
+          <div class="proof-pill">📦 Envio rápido + rastreio</div>
+          <div class="proof-pill">🛡️ Suporte WhatsApp</div>
+        </div>
+      </div>
+
+      <div class="reviews-list" id="reviews-list"></div>
+      <div class="reviews-hint">➡️ Arraste para ver mais avaliações</div>
+    </section>
+  </main>
+
+  <section class="banner">
+    <div class="banner-texto">
+      <h2>Compre com segurança e receba rápido!</h2>
+      <p>Pagamento seguro, garantia de entrega, suporte via WhatsApp e devolução garantida.</p>
+      <ul class="destaques">
+        <li>✅ Produtos Originais</li>
+        <li>✅ Suporte 24/7</li>
+        <li>✅ Entrega Rápida</li>
+        <li>✅ Devolução Garantida</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Carrinho flutuante -->
+  <button class="cart-flutuante" id="cart-flutuante" type="button">
+    🛒 <span id="cart-count">0</span>
+  </button>
+
+  <!-- Overlay do carrinho -->
+  <div class="cart-overlay" id="cart-overlay"></div>
+
+  <!-- Modal do carrinho -->
+  <div class="cart-modal" id="cart-modal">
+    <div class="cart-header">
+      <h3>Seu Carrinho</h3>
+      <span class="cart-badge">Compra protegida</span>
+    </div>
+
+    <div id="cart-items"></div>
+
+    <div class="cart-resumo">
+      <div class="row">
+        <span>Subtotal</span>
+        <span>R$ <b id="cart-subtotal">0.00</b></span>
+      </div>
+
+      <div class="row">
+        <span>Frete (Correios)</span>
+        <span>R$ <b id="cart-frete">20.00</b></span>
+      </div>
+
+      <div class="row total">
+        <span>Total</span>
+        <span>R$ <b id="cart-total">0.00</b></span>
+      </div>
+
+      <div class="cart-trust-mini">
+        <div>⚡ PIX cai em segundos</div>
+        <div>📦 Código de rastreio após envio</div>
+        <div>🛡️ Suporte WhatsApp</div>
+      </div>
+    </div>
+
+    <!-- PASSO 1 -->
+    <div class="step-box" id="step-entrega">
+      <div class="step-title">
+        <span class="step-pill">PASSO 1</span>
+        <h4>Dados de Entrega</h4>
+      </div>
+
+      <p class="step-sub">Preencha para liberar o pagamento via PIX.</p>
+
+      <form id="checkout-form" class="form-entrega">
+        <div class="grid">
+          <div class="field">
+            <label>Nome completo</label>
+            <input type="text" name="nome" placeholder="Ex: João Silva" required />
+          </div>
+
+          <div class="field">
+            <label>E-mail</label>
+            <input type="email" name="email" placeholder="Ex: voce@email.com" required />
+          </div>
+
+          <div class="field">
+            <label>WhatsApp</label>
+            <input type="tel" name="telefone" placeholder="(DDD) 99999-9999" required />
+          </div>
+
+          <div class="field full">
+            <label>Endereço</label>
+            <input type="text" name="endereco" placeholder="Rua, número, bairro, complemento" required />
+          </div>
+
+          <div class="field">
+            <label>Cidade</label>
+            <input type="text" name="cidade" placeholder="Ex: São Paulo" required />
+          </div>
+
+          <div class="field">
+            <label>CEP</label>
+            <input type="text" name="cep" placeholder="00000-000" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          Continuar para pagamento PIX
+        </button>
+
+        <small class="form-hint">
+          🔒 Seus dados são usados somente para envio. Frete fixo <b>R$ 20,00</b> (Correios).
+        </small>
+      </form>
+    </div>
+
+    <!-- PASSO 2 -->
+    <div class="step-box hidden" id="step-pix">
+      <div class="step-title">
+        <span class="step-pill">PASSO 2</span>
+        <h4>Pagamento via PIX</h4>
+      </div>
+
+      <p class="step-sub">
+        Escaneie o QRCode ou copie o código. Assim que pagar, o status será atualizado automaticamente.
+      </p>
+
+      <div class="pix-box" id="pix-box">
+        <div class="pix-top">
+          <div class="pix-flag">✅ PIX disponível</div>
+          <div class="pix-time" id="pix-timer">⏳ Promoção por tempo limitado</div>
+        </div>
+
+        <div class="pix-qr">
+          <img id="pix-qrcode-img" alt="QR Code PIX" style="display:none; max-width:220px; width:100%; margin:0 auto;" />
+          <canvas id="pix-qrcode" width="220" height="220" style="display:none;"></canvas>
+        </div>
+
+        <label class="pix-label">PIX Copia e Cola</label>
+        <textarea id="pix-copia-cola" readonly></textarea>
+
+        <div class="pix-actions">
+          <button type="button" id="btn-copiar-pix">Copiar código PIX</button>
+          <button type="button" class="btn-secondary" id="btn-ja-paguei" style="display:none;">Já paguei</button>
+        </div>
+
+        <div id="pix-status" class="pix-status">⏳ Aguardando pagamento...</div>
+
+        <div class="pix-safe">
+          <div>🔒 Ambiente seguro</div>
+          <div>📌 Confirme o valor antes de pagar</div>
+          <div>🧾 Envie comprovante no WhatsApp</div>
+        </div>
+
+        <div class="pix-warn" id="pix-warn" style="display:none;"></div>
+      </div>
+
+      <button id="close-cart" class="cart-close hidden" type="button">Fechar</button>
+    </div>
+
+    <button id="close-cart-fallback" class="cart-close fallback" type="button">Fechar</button>
+  </div>
+
+  <!-- Modal produto -->
+  <div class="product-modal" id="product-modal">
+    <div class="product-content" id="product-content">
+      <button class="seta esquerda" id="prev-img" type="button">❮</button>
+
+      <button id="close-product" type="button" aria-label="Fechar">&times;</button>
+
+      <h3 id="modal-title"></h3>
+
+      <div class="modal-image-wrapper">
+        <img id="modal-img" src="" alt="Produto" />
+        <video id="modal-video" style="display:none;" controls autoplay muted loop playsinline>
+          <source id="modal-video-source" src="" type="video/mp4" />
+          Seu navegador não suporta vídeo.
+        </video>
+      </div>
+
+      <button class="seta direita" id="next-img" type="button">❯</button>
+
+      <p id="modal-price"></p>
+      <p id="modal-description"></p>
+      <p id="modal-characteristics"></p>
+
+      <div id="modal-size-container" class="size-box" style="display:none;">
+        <label for="modal-size">Tamanho:</label>
+        <select id="modal-size"></select>
+      </div>
+
+      <button id="add-to-cart-modal" type="button" class="btn-add">Adicionar ao Carrinho</button>
+    </div>
+  </div>
+
+  <!-- ALERTA DE COMPRA -->
+  <div class="purchase-alert" id="purchase-alert">
+    <strong id="purchase-name">Carlos Almeida</strong>
+    <span id="purchase-time">fez uma compra há 2 min</span>
+  </div>
+
+    <!-- ALERTA DE COMPRA -->
+  <div class="purchase-alert" id="purchase-alert">
+    <strong id="purchase-name">Carlos Almeida</strong>
+    <span id="purchase-time">fez uma compra há 2 min</span>
+  </div>
+
+  <script>
+    window.API_URL = "https://tiktokshop-2-5qob.onrender.com";
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
+</body>
+</html>
