@@ -13,30 +13,7 @@ if (!process.env.MERCADO_PAGO_ACCESS_TOKEN) {
   throw new Error("MERCADO_PAGO_ACCESS_TOKEN não encontrada no .env");
 }
 
-// CORS explícito
-const allowedOrigins = [
-  process.env.PUBLIC_URL,
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-  "https://0e8d-2804-6790-82ec-e500-1072-5282-ffd3-1486.ngrok-free.app"
-].filter(Boolean);
-
-const corsOptions = {
-  origin(origin, callback) {
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    return callback(new Error(`Origem não permitida pelo CORS: ${origin}`));
-  },
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 // arquivos estáticos
@@ -53,6 +30,11 @@ function emailValido(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
 }
 
+// teste rápido
+app.get("/ping", (req, res) => {
+  res.json({ ok: true, pong: true });
+});
+
 app.get("/config", (req, res) => {
   res.json({
     ok: true,
@@ -63,6 +45,9 @@ app.get("/config", (req, res) => {
 
 app.post("/criar-pix", async (req, res) => {
   try {
+    console.log("POST /criar-pix recebido");
+    console.log("Body:", req.body);
+
     const { total, pedidoId, dadosEntrega, itens } = req.body;
 
     if (!total || Number(total) <= 0) {
@@ -121,7 +106,9 @@ app.post("/criar-pix", async (req, res) => {
     const response = await paymentClient.create({ body });
     const tx = response?.point_of_interaction?.transaction_data || {};
 
-    return res.json({
+    console.log("PIX criado:", response?.id);
+
+    return res.status(200).json({
       ok: true,
       pedidoId,
       pagamentoId: response?.id || null,
@@ -181,20 +168,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// fallback de API inexistente em JSON
-app.use("/config", (req, res) => {
-  res.status(404).json({ ok: false, error: "Rota /config não encontrada." });
-});
-
-app.use("/criar-pix", (req, res) => {
-  res.status(404).json({ ok: false, error: "Rota /criar-pix não encontrada." });
-});
-
-app.use("/status-pagamento", (req, res) => {
-  res.status(404).json({ ok: false, error: "Rota /status-pagamento não encontrada." });
-});
-
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Servidor rodando na porta ${PORT}`);
-  console.log("Origins permitidas:", allowedOrigins);
 });
