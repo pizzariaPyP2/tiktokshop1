@@ -1,36 +1,34 @@
 // ======================
 // CONFIG
 // ======================
-
-const FRETE_FIXO = 0.0;
-const PROMO_SECONDS = 2 * 60 * 60;
+const FRETE_FIXO = 0.00;
+const PROMO_SECONDS = 2 * 60 * 60; // 7200
 let WHATSAPP_NUMERO = "5511963565553";
 let pollingPagamento = null;
 let pedidoAtual = null;
 let whatsappEnviadoPedidoId = null;
 let linkWhatsAppAprovado = "";
 
-// Se hospedar frontend e backend juntos, funciona sozinho.
-// Se hospedar frontend separado, defina antes do script:
-// <script>window.API_URL = "https://seu-backend.onrender.com";</script>
-const API_BASE = window.location.origin.replace(/\/$/, "");
+const API_BASE =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3000"
+    : window.location.origin;
 
 async function lerRespostaJsonSegura(resp) {
   const contentType = resp.headers.get("content-type") || "";
   const texto = await resp.text();
 
-  console.log("STATUS:", resp.status);
-  console.log("CONTENT-TYPE:", contentType);
-  console.log("RESPOSTA BRUTA:", texto);
-
-  if (!contentType.includes("application/json")) {
-    throw new Error(`O servidor retornou HTML ou texto em vez de JSON. Resposta: ${texto.slice(0, 300)}`);
+  if (!contentType.toLowerCase().includes("application/json")) {
+    throw new Error(
+      `O servidor retornou HTML ou texto em vez de JSON. Resposta: ${texto.slice(0, 300)}`
+    );
   }
 
   try {
     return JSON.parse(texto);
   } catch (e) {
-    throw new Error(`JSON inválido. Resposta: ${texto.slice(0, 300)}`);
+    throw new Error("O servidor retornou um JSON inválido.");
   }
 }
 
@@ -38,10 +36,6 @@ async function carregarConfig() {
   try {
     const resp = await fetch(`${API_BASE}/config`);
     const data = await lerRespostaJsonSegura(resp);
-
-    if (!resp.ok || !data.ok) {
-      throw new Error(data?.error || "Erro ao carregar configuração.");
-    }
 
     if (data.whatsapp_numero) {
       WHATSAPP_NUMERO = data.whatsapp_numero;
@@ -143,6 +137,9 @@ const produtos = [
   }
 ];
 
+// ======================
+// MAIS VENDIDOS (IDs únicos)
+// ======================
 const maisVendidos = [
   {
     id: 1,
@@ -232,7 +229,7 @@ const maisVendidos = [
   },
   {
     id: 6,
-    nome: "FW3 GTX Fox Grafite com Viseira Solar",
+    nome: " FW3 GTX Fox Grafite com Viseira Solar",
     preco: 149.9,
     img: "https://i.im.ge/2026/03/22/efK6rS.br-11134207-81z1k-mfcr7rh9fhmv6f.webp",
     imgs: [
@@ -296,6 +293,7 @@ let ultimoNomeCompraFake = "";
 
 function pegarNomeCompraFake() {
   let nome = "";
+
   do {
     nome = nomesComprasFake[Math.floor(Math.random() * nomesComprasFake.length)];
   } while (nomesComprasFake.length > 1 && nome === ultimoNomeCompraFake);
@@ -317,6 +315,7 @@ function iniciarAlertaComprasFake() {
 
     alertName.textContent = nome;
     alertTime.textContent = tempoTxt;
+
     alertBox.classList.add("show");
 
     setTimeout(() => {
@@ -326,12 +325,15 @@ function iniciarAlertaComprasFake() {
 
   setTimeout(() => {
     mostrarAlerta();
-    setInterval(mostrarAlerta, 7000);
+
+    setInterval(() => {
+      mostrarAlerta();
+    }, 7000);
   }, 2500);
 }
 
 // ======================
-// Scroll lock
+// Scroll lock (mobile premium)
 // ======================
 function lockScroll(lock) {
   if (lock) {
@@ -354,7 +356,7 @@ function lockScroll(lock) {
 }
 
 // ======================
-// Estoque
+// Estoque (SESSION)
 // ======================
 [...produtos, ...maisVendidos].forEach((p) => {
   const stock = sessionStorage.getItem(`estoque_${p.id}`);
@@ -363,7 +365,7 @@ function lockScroll(lock) {
 });
 
 // ======================
-// Tempo Promo
+// Tempo Promo (SESSION) - 2h rodando SEM parar
 // ======================
 let tempo = sessionStorage.getItem("tempo_oferta")
   ? Number(sessionStorage.getItem("tempo_oferta"))
@@ -391,9 +393,11 @@ const checkoutForm = document.getElementById("checkout-form");
 const closeCart = document.getElementById("close-cart");
 const closeCartFallback = document.getElementById("close-cart-fallback");
 
+// steps do carrinho
 const stepEntrega = document.getElementById("step-entrega");
 const stepPix = document.getElementById("step-pix");
 
+// pix ui
 const pixTimerEl = document.getElementById("pix-timer");
 const pixCopiaColaEl = document.getElementById("pix-copia-cola");
 const pixCanvas = document.getElementById("pix-qrcode");
@@ -402,6 +406,7 @@ const btnCopiarPix = document.getElementById("btn-copiar-pix");
 const btnJaPaguei = document.getElementById("btn-ja-paguei");
 const pixWarn = document.getElementById("pix-warn");
 
+// modal produto
 const productModal = document.getElementById("product-modal");
 const productContent = document.getElementById("product-content");
 
@@ -421,6 +426,7 @@ const prevImgBtn = document.getElementById("prev-img");
 const nextImgBtn = document.getElementById("next-img");
 const modalImageWrapper = document.querySelector(".modal-image-wrapper");
 
+// vídeo no modal
 let modalVideo = document.getElementById("modal-video");
 let modalVideoSource = document.getElementById("modal-video-source");
 
@@ -517,6 +523,7 @@ function prepararLinkWhatsAppAprovado(pedido) {
   const msg = montarMensagemWhatsApp(pedido);
   const url = `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(msg)}`;
   linkWhatsAppAprovado = url;
+
   return url;
 }
 
@@ -540,7 +547,9 @@ async function consultarStatusPagamento(pagamentoId) {
   const data = await lerRespostaJsonSegura(resp);
 
   if (!resp.ok || !data.ok) {
-    throw new Error(data?.detalhe || data?.error || "Erro ao consultar status do pagamento.");
+    throw new Error(
+      data?.detalhe || data?.error || "Erro ao consultar status do pagamento."
+    );
   }
 
   return data;
@@ -623,8 +632,7 @@ function iniciarPollingPagamento(pagamentoId) {
 
         const statusEl = document.getElementById("pix-status");
         if (statusEl) {
-          statusEl.textContent =
-            "✅ PAGAMENTO APROVADO! Agora clique no botão abaixo para enviar seu pedido no WhatsApp.";
+          statusEl.textContent = "✅ PAGAMENTO APROVADO! Agora clique no botão abaixo para enviar seu pedido no WhatsApp.";
           statusEl.style.color = "green";
           statusEl.style.fontWeight = "900";
           statusEl.style.fontSize = "18px";
@@ -648,7 +656,7 @@ function iniciarPollingPagamento(pagamentoId) {
 }
 
 // ======================
-// Galeria do modal
+// Galeria do modal (dots + 1/4)
 // ======================
 function ensureGalleryUI() {
   if (!modalImageWrapper) return;
@@ -701,7 +709,7 @@ function updateModalImage() {
 }
 
 // ======================
-// Card padrão
+// Card padrão com vídeo
 // ======================
 function criarCard(prod) {
   const div = document.createElement("div");
@@ -815,6 +823,7 @@ function abrirModal(prod) {
   }
 
   aplicarTextoContador();
+
   productModal.classList.add("active");
   lockScroll(true);
 }
@@ -858,7 +867,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 // ======================
-// Swipe
+// Swipe (galeria) - ignora scroll vertical
 // ======================
 let startX = 0;
 let startY = 0;
@@ -898,13 +907,15 @@ if (productContent) {
 }
 
 // ======================
-// Contador global
+// Contador global (2h rolando)
 // ======================
 function iniciarContador() {
   aplicarTextoContador();
   setInterval(() => {
     tempo--;
-    if (tempo <= 0) tempo = PROMO_SECONDS;
+    if (tempo <= 0) {
+      tempo = PROMO_SECONDS;
+    }
     sessionStorage.setItem("tempo_oferta", tempo);
     aplicarTextoContador();
   }, 1000);
@@ -989,7 +1000,7 @@ if (addToCartModal) {
 }
 
 // ======================
-// Carrinho modal
+// Carrinho modal (PASSOS)
 // ======================
 function resetarStepsCarrinho() {
   if (stepEntrega) stepEntrega.classList.remove("hidden");
@@ -1056,7 +1067,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ======================
-// PIX
+// PASSO 1 → Libera PIX
 // ======================
 async function desenharQRCodeSeguro(textoPix) {
   if (!pixCanvas) return;
@@ -1120,6 +1131,10 @@ async function gerarEExibirPix(dadosEntrega) {
       pixWarn.textContent = "";
     }
 
+    if (pixStatus) {
+      pixStatus.textContent = "⏳ Gerando PIX...";
+    }
+
     if (pixCopiaColaEl) {
       pixCopiaColaEl.value = "Gerando PIX...";
     }
@@ -1179,7 +1194,9 @@ async function gerarEExibirPix(dadosEntrega) {
     whatsappEnviadoPedidoId = null;
     linkWhatsAppAprovado = "";
 
-    if (pixCopiaColaEl) pixCopiaColaEl.value = pixText;
+    if (pixCopiaColaEl) {
+      pixCopiaColaEl.value = pixText || "";
+    }
 
     if (qrBase64 && pixQrImg) {
       pixQrImg.src = `data:image/png;base64,${qrBase64}`;
@@ -1187,6 +1204,10 @@ async function gerarEExibirPix(dadosEntrega) {
       if (pixCanvas) pixCanvas.style.display = "none";
     } else if (pixText) {
       await desenharQRCodeSeguro(pixText);
+    }
+
+    if (pixStatus) {
+      pixStatus.textContent = "⏳ Aguardando pagamento.";
     }
 
     if (pagamentoId) {
@@ -1209,9 +1230,24 @@ async function gerarEExibirPix(dadosEntrega) {
 
     configurarBotaoJaPaguei(pedidoAtual);
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao gerar PIX:", error);
 
     if (pixCopiaColaEl) pixCopiaColaEl.value = "";
+
+    if (pixQrImg) {
+      pixQrImg.style.display = "none";
+      pixQrImg.removeAttribute("src");
+    }
+
+    if (pixCanvas) {
+      pixCanvas.style.display = "none";
+      const ctx = pixCanvas.getContext("2d");
+      ctx.clearRect(0, 0, pixCanvas.width, pixCanvas.height);
+    }
+
+    if (pixStatus) {
+      pixStatus.textContent = "❌ Erro ao gerar pagamento.";
+    }
 
     if (pixWarn) {
       pixWarn.style.display = "block";
@@ -1221,6 +1257,7 @@ async function gerarEExibirPix(dadosEntrega) {
     alert(error.message || "Não foi possível gerar o PIX.");
   }
 }
+
 
 if (checkoutForm) {
   checkoutForm.onsubmit = async (e) => {
@@ -1321,14 +1358,12 @@ function renderComentariosClientes() {
   el.innerHTML = "";
 
   comentariosClientes.forEach((c) => {
-    const avatar = c.foto || "https://via.placeholder.com/48?text=User";
-
     const card = document.createElement("div");
     card.className = "review-card";
 
     card.innerHTML = `
       <div class="review-top">
-        <img class="review-avatar" src="${avatar}" alt="${c.nome}">
+        <img class="review-avatar" src="${c.foto}" alt="${c.nome}">
         <div>
           <p class="review-name">${c.nome}</p>
           <div class="review-meta">
