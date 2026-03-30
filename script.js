@@ -19,16 +19,18 @@ async function lerRespostaJsonSegura(resp) {
   const contentType = resp.headers.get("content-type") || "";
   const texto = await resp.text();
 
+  console.log("STATUS:", resp.status);
+  console.log("CONTENT-TYPE:", contentType);
+  console.log("RESPOSTA BRUTA:", texto);
+
   if (!contentType.includes("application/json")) {
-    console.error("Resposta recebida (não JSON):", texto);
-    throw new Error("O servidor retornou HTML ou texto em vez de JSON.");
+    throw new Error(`O servidor retornou HTML ou texto em vez de JSON. Resposta: ${texto.slice(0, 300)}`);
   }
 
   try {
     return JSON.parse(texto);
   } catch (e) {
-    console.error("JSON inválido recebido:", texto);
-    throw new Error("A resposta do servidor não é um JSON válido.");
+    throw new Error(`JSON inválido. Resposta: ${texto.slice(0, 300)}`);
   }
 }
 
