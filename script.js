@@ -87,7 +87,7 @@ const produtos = [
     id: 3,
     nome: "Norisk FF345 Route Monocolor Preto Fosco",
     preco: 149.9,
-    videoEntrega: "videos-produto2.mp4",
+    videoEntrega: "videos/videos-produto2.mp4",
     img: "https://i.im.ge/2026/03/22/efZmhC.br-11134207-820md-mlmjc6gi1i4nc0.webp",
     imgs: [
       "https://i.im.ge/2026/03/22/efZmhC.br-11134207-820md-mlmjc6gi1i4nc0.webp",
