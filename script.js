@@ -87,7 +87,7 @@ const produtos = [
     id: 3,
     nome: "Norisk FF345 Route Monocolor Preto Fosco",
     preco: 149.9,
-    videoEntrega: "videos/videos-produto2.mp4",
+    videoEntrega: "/videos/videos-produto2.mp4",
     img: "https://i.im.ge/2026/03/22/efZmhC.br-11134207-820md-mlmjc6gi1i4nc0.webp",
     imgs: [
       "https://i.im.ge/2026/03/22/efZmhC.br-11134207-820md-mlmjc6gi1i4nc0.webp",
@@ -179,7 +179,7 @@ const maisVendidos = [
     id: 3,
     nome: "Norisk FF345 Route Monocolor Preto Fosco",
     preco: 149.9,
-    videoEntrega: "videos-produto2.mp4",
+    videoEntrega: "/videos/videos-produto2.mp4",
     img: "https://i.im.ge/2026/03/22/efZmhC.br-11134207-820md-mlmjc6gi1i4nc0.webp",
     imgs: [
       "https://i.im.ge/2026/03/22/efZmhC.br-11134207-820md-mlmjc6gi1i4nc0.webp",
@@ -405,6 +405,7 @@ const pixQrImg = document.getElementById("pix-qrcode-img");
 const btnCopiarPix = document.getElementById("btn-copiar-pix");
 const btnJaPaguei = document.getElementById("btn-ja-paguei");
 const pixWarn = document.getElementById("pix-warn");
+const pixStatus = document.getElementById("pix-status");
 
 // modal produto
 const productModal = document.getElementById("product-modal");
@@ -1293,7 +1294,7 @@ const comentariosClientes = [
     estrelas: 5,
     data: "há 2 dias",
     texto: "juro que pensei que não ia chegar",
-    videoEntrega: "entrega-bruna.mp4"
+    videoEntrega: "/videos/entrega-bruna.mp4"
   },
   {
     nome: "João Pedro",
@@ -1309,7 +1310,7 @@ const comentariosClientes = [
     estrelas: 5,
     data: "há 4 dias",
     texto: "top de linha gostei muito <3 ",
-    videoEntrega: "entrega-ana.mp4"
+    videoEntrega: "/videos/entrega-ana.mp4"
   },
   {
     nome: "Bruno Santos",
