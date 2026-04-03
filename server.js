@@ -29,8 +29,12 @@ function emailValido(email) {
 }
 
 app.get("/config", (req, res) => {
+  const host = req.get("host");
+  const protocolo = req.headers["x-forwarded-proto"] || req.protocol;
+
   res.json({
-    public_url: process.env.PUBLIC_URL || `http://localhost:${PORT}`,
+    ok: true,
+    public_url: process.env.PUBLIC_URL || `${protocolo}://${host}`,
     whatsapp_numero: process.env.WHATSAPP_NUMERO || ""
   });
 });
@@ -95,7 +99,7 @@ app.post("/criar-pix", async (req, res) => {
     const response = await paymentClient.create({ body });
     const tx = response?.point_of_interaction?.transaction_data || {};
 
-    res.json({
+    return res.json({
       ok: true,
       pedidoId,
       pagamentoId: response?.id || null,
@@ -107,7 +111,7 @@ app.post("/criar-pix", async (req, res) => {
   } catch (error) {
     console.error("Erro ao criar PIX:", error);
 
-    res.status(error?.status || 500).json({
+    return res.status(error?.status || 500).json({
       ok: false,
       error: "Não foi possível gerar o PIX.",
       detalhe:
@@ -131,7 +135,7 @@ app.get("/status-pagamento/:id", async (req, res) => {
 
     const response = await paymentClient.get({ id: paymentId });
 
-    res.json({
+    return res.json({
       ok: true,
       id: response?.id || null,
       status: response?.status || "",
@@ -140,7 +144,7 @@ app.get("/status-pagamento/:id", async (req, res) => {
   } catch (error) {
     console.error("Erro ao consultar pagamento:", error);
 
-    res.status(error?.status || 500).json({
+    return res.status(error?.status || 500).json({
       ok: false,
       error: "Não foi possível consultar o pagamento.",
       detalhe:
@@ -151,12 +155,15 @@ app.get("/status-pagamento/:id", async (req, res) => {
   }
 });
 
+app.get("/ping", (req, res) => {
+  res.json({ ok: true, pong: true });
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
   console.log(`Vídeos disponíveis em http://localhost:${PORT}/videos/`);
-
 });
