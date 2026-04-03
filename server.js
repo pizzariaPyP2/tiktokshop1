@@ -7,6 +7,8 @@ const { MercadoPagoConfig, Payment } = require("mercadopago");
 dotenv.config();
 
 const app = express();
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
@@ -15,7 +17,8 @@ app.use(express.static(__dirname));
 app.use("/videos", express.static(path.join(__dirname, "videos")));
 
 if (!process.env.MERCADO_PAGO_ACCESS_TOKEN) {
-  throw new Error("MERCADO_PAGO_ACCESS_TOKEN não encontrada no .env");
+  console.error("Falta a variável MERCADO_PAGO_ACCESS_TOKEN no ambiente.");
+  process.exit(1);
 }
 
 const client = new MercadoPagoConfig({
@@ -27,6 +30,10 @@ const paymentClient = new Payment(client);
 function emailValido(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
 }
+
+app.get("/ping", (req, res) => {
+  res.json({ ok: true, pong: true });
+});
 
 app.get("/config", (req, res) => {
   const host = req.get("host");
@@ -66,19 +73,19 @@ app.post("/criar-pix", async (req, res) => {
 
     const body = {
       transaction_amount: Number(total),
-      description: `Pedido TikTok Shop #${pedidoId}`,
+      description: `Pedido TikTok Shop #${pedidoId || "0001"}`,
       payment_method_id: "pix",
       payer: {
         email,
         first_name,
         last_name
       },
-      external_reference: String(pedidoId),
+      external_reference: String(pedidoId || ""),
       additional_info: {
         items: Array.isArray(itens)
           ? itens.map((item) => ({
               id: String(item.id || ""),
-              title: item.nome || "Produto",
+              title: String(item.nome || "Produto"),
               description: item.tamanhoEscolhido
                 ? `Tamanho: ${item.tamanhoEscolhido}`
                 : "Produto da loja",
@@ -101,7 +108,7 @@ app.post("/criar-pix", async (req, res) => {
 
     return res.json({
       ok: true,
-      pedidoId,
+      pedidoId: pedidoId || null,
       pagamentoId: response?.id || null,
       status: response?.status || "",
       status_detail: response?.status_detail || "",
@@ -155,15 +162,11 @@ app.get("/status-pagamento/:id", async (req, res) => {
   }
 });
 
-app.get("/ping", (req, res) => {
-  res.json({ ok: true, pong: true });
-});
-
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-  console.log(`Vídeos disponíveis em http://localhost:${PORT}/videos/`);
+  console.log(`Servidor rodando na porta ${PORT}`);
+  console.log(`Acesse /ping para testar a API`);
 });
