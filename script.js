@@ -1,7 +1,7 @@
 // ======================
 // CONFIG
 // ======================
-const FRETE_FIXO = 20.00;
+const FRETE_FIXO = 0.00;
 const PROMO_SECONDS = 2 * 60 * 60; // 7200
 let WHATSAPP_NUMERO = "5511963565553";
 let pollingPagamento = null;
@@ -9,39 +9,15 @@ let pedidoAtual = null;
 let whatsappEnviadoPedidoId = null;
 let linkWhatsAppAprovado = "";
 
-const API_BASE =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1"
-    ? "http://localhost:3000"
-    : window.location.origin;
-
-async function lerRespostaJsonSegura(resp) {
-  const contentType = resp.headers.get("content-type") || "";
-  const texto = await resp.text();
-
-  if (!contentType.toLowerCase().includes("application/json")) {
-    throw new Error(
-      `O servidor retornou HTML ou texto em vez de JSON. Resposta: ${texto.slice(0, 300)}`
-    );
-  }
-
-  try {
-    return JSON.parse(texto);
-  } catch (e) {
-    throw new Error("O servidor retornou um JSON inválido.");
-  }
-}
-
 async function carregarConfig() {
   try {
-    const resp = await fetch(`${API_BASE}/config`);
-    const data = await lerRespostaJsonSegura(resp);
-
+    const resp = await fetch("/config");
+    const data = await resp.json();
     if (data.whatsapp_numero) {
       WHATSAPP_NUMERO = data.whatsapp_numero;
     }
   } catch (e) {
-    console.warn("Não consegui carregar /config:", e.message);
+    console.warn("Não consegui carregar /config");
   }
 }
 
@@ -52,7 +28,7 @@ const produtos = [
   {
     id: 1,
     nome: "Capacete Norisk Ff345 Route Speedmax Preto Roxo",
-    preco: 149.9,
+    preco: 0.49,
     img: "https://i.im.ge/2026/01/21/Gg03Rp.fe1f35f1b3f1dca15ec1dcbbca454394.webp",
     imgs: [
       "https://i.im.ge/2026/01/21/Gg03Rp.fe1f35f1b3f1dca15ec1dcbbca454394.webp",
@@ -76,6 +52,98 @@ const produtos = [
       "https://i.im.ge/2026/03/22/efZaYK.br-11134207-820m7-mlqfm9h379qc7f.webp",
       "https://i.im.ge/2026/03/22/efZ7B9.br-11134207-820m2-mlgu7nv3bcp15e.webp",
       "https://i.im.ge/2026/03/22/efZIaX.br-11134207-820m1-mlgtv3oa3e2tb0.webp"
+    ],
+    rating: 4.5,
+    reviews: 12,
+    descricao: "Capacete esportivo resistente.",
+    caracteristicas: "Material ABS, ventilação frontal.",
+    tamanho: true
+  },
+  {
+    id: 3,
+    nome: "Norisk FF345 Route Monocolor Preto Fosco",
+    preco: 149.9,
+    videoEntrega: "videos-produto2.mp4",
+    img: "https://i.im.ge/2026/03/22/efZmhC.br-11134207-820md-mlmjc6gi1i4nc0.webp",
+    imgs: [
+      "https://i.im.ge/2026/03/22/efZmhC.br-11134207-820md-mlmjc6gi1i4nc0.webp",
+      "https://i.im.ge/2026/03/22/efZwbq.br-11134207-820lv-mlmjc6gkun0l49.webp",
+      "https://i.im.ge/2026/03/22/efZPaP.br-11134207-820le-mlgtv3obm68415.webp",
+      "https://i.im.ge/2026/03/22/efZC1m.br-11134207-81z1k-mhg9n4m6v40356.webp"
+    ],
+    rating: 4.5,
+    reviews: 12,
+    descricao: "Capacete esportivo resistente.",
+    caracteristicas: "Material ABS, ventilação frontal.",
+    tamanho: true
+  },
+  {
+    id: 4,
+    nome: "NORISK RAZOR FECHADO SPEEDMAX VERDE BRANCO ESPORTIVO ORIGINAL ",
+    preco: 149.9,
+    img: "https://i.im.ge/2026/03/22/efZYX0.br-11134207-81zuf-mkjq6nv79koyce.webp",
+    imgs: [
+      "https://i.im.ge/2026/03/22/efZYX0.br-11134207-81zuf-mkjq6nv79koyce.webp",
+      "https://i.im.ge/2026/03/22/efZWAx.br-11134207-7r98o-mb3zwlo5pk0fd6.webp",
+      "https://i.im.ge/2026/03/22/efZZpa.br-11134207-7r98o-mb3zwlo5sd5b13.webp",
+      "https://i.im.ge/2026/03/22/efZV1J.br-11134207-7r98o-mb2l9aqcgs5rab.webp"
+    ],
+    rating: 4.5,
+    reviews: 12,
+    descricao: "Capacete esportivo resistente.",
+    caracteristicas: "Material ABS, ventilação frontal.",
+    tamanho: true
+  },
+  {
+    id: 5,
+    nome: "NORISK RAZOR SHARP PRETO/VERMELHO ORIGINAL + VISEIRA CRISTAL",
+    preco: 149.9,
+    img: "https://i.im.ge/2026/03/22/efZvcF.br-11134207-7r98o-malmafju3kl51e.webp",
+    imgs: [
+      "https://i.im.ge/2026/03/22/efZvcF.br-11134207-7r98o-malmafju3kl51e.webp",
+      "https://i.im.ge/2026/03/22/efZJGK.br-11134207-7r98o-matv9iwnoubz2f.webp",
+      "https://i.im.ge/2026/03/22/efZ479.br-11134207-7r98o-malmafju4z5l36.webp",
+      "https://i.im.ge/2026/03/22/efZBCX.br-11134207-7r98o-malocp6vju6n54.webp"
+    ],
+    rating: 4.5,
+    reviews: 12,
+    descricao: "Capacete esportivo resistente.",
+    caracteristicas: "Material ABS, ventilação frontal.",
+    tamanho: true
+  }
+];
+
+// ======================
+// MAIS VENDIDOS (IDs únicos)
+// ======================
+const maisVendidos = [
+  {
+    id: 1,
+    nome: "NORISK FORCE II GRAND PRIX GERMANY ALEMANHA ARTICULADO ESCAMOTEAVEL",
+    preco: 149.9,
+    img: "https://i.im.ge/2026/03/22/efKli4.br-11134207-820m1-mm3a1jhbhxq89c.webp",
+    imgs: [
+      "https://i.im.ge/2026/03/22/efKli4.br-11134207-820m1-mm3a1jhbhxq89c.webp",
+      "https://i.im.ge/2026/03/22/efKueq.br-11134207-820li-mm3a1jhbjcaoa7.webp",
+      "https://i.im.ge/2026/03/22/efK2v1.br-11134207-820md-mm3a1jhbkqv4d2.webp",
+      "https://i.im.ge/2026/03/22/efKsVr.sg-11134201-7rdwk-mbzozmath77n0e.webp"
+    ],
+    rating: 4.5,
+    reviews: 12,
+    descricao: "Capacete esportivo resistente.",
+    caracteristicas: "Material ABS, ventilação frontal.",
+    tamanho: true
+  },
+  {
+    id: 2,
+    nome: "NORISK ESPORTIVO BARATO RAZOR SPEEDMAX CINZA LARANJA NOVO PROMOÇÃO + BRINDE UNISSEX",
+    preco: 149.9,
+    img: "https://i.im.ge/2026/03/22/efKLec.br-11134207-7r98o-maygkzv8b5kp06.webp",
+    imgs: [
+      "https://i.im.ge/2026/03/22/efKLec.br-11134207-7r98o-maygkzv8b5kp06.webp",
+      "https://i.im.ge/2026/03/22/efKiCG.br-11134207-7r98o-maygkzv8dyplec.webp",
+      "https://i.im.ge/2026/03/22/efK0vx.br-11134207-7r98o-maygkzv88cfte0.webp",
+      "https://i.im.ge/2026/03/22/efKj6J.br-11134207-7r98o-maygkzv8fda12b.webp"
     ],
     rating: 4.5,
     reviews: 12,
@@ -134,102 +202,10 @@ const produtos = [
     descricao: "Capacete esportivo resistente.",
     caracteristicas: "Material ABS, ventilação frontal.",
     tamanho: true
-  }
-];
-
-// ======================
-// MAIS VENDIDOS
-// ======================
-const maisVendidos = [
-  {
-    id: 101,
-    nome: "NORISK FORCE II GRAND PRIX GERMANY ALEMANHA ARTICULADO ESCAMOTEAVEL",
-    preco: 149.9,
-    img: "https://i.im.ge/2026/03/22/efKli4.br-11134207-820m1-mm3a1jhbhxq89c.webp",
-    imgs: [
-      "https://i.im.ge/2026/03/22/efKli4.br-11134207-820m1-mm3a1jhbhxq89c.webp",
-      "https://i.im.ge/2026/03/22/efKueq.br-11134207-820li-mm3a1jhbjcaoa7.webp",
-      "https://i.im.ge/2026/03/22/efK2v1.br-11134207-820md-mm3a1jhbkqv4d2.webp",
-      "https://i.im.ge/2026/03/22/efKsVr.sg-11134201-7rdwk-mbzozmath77n0e.webp"
-    ],
-    rating: 4.5,
-    reviews: 12,
-    descricao: "Capacete esportivo resistente.",
-    caracteristicas: "Material ABS, ventilação frontal.",
-    tamanho: true
   },
   {
-    id: 102,
-    nome: "NORISK ESPORTIVO BARATO RAZOR SPEEDMAX CINZA LARANJA NOVO PROMOÇÃO + BRINDE UNISSEX",
-    preco: 149.9,
-    img: "https://i.im.ge/2026/03/22/efKLec.br-11134207-7r98o-maygkzv8b5kp06.webp",
-    imgs: [
-      "https://i.im.ge/2026/03/22/efKLec.br-11134207-7r98o-maygkzv8b5kp06.webp",
-      "https://i.im.ge/2026/03/22/efKiCG.br-11134207-7r98o-maygkzv8dyplec.webp",
-      "https://i.im.ge/2026/03/22/efK0vx.br-11134207-7r98o-maygkzv88cfte0.webp",
-      "https://i.im.ge/2026/03/22/efKj6J.br-11134207-7r98o-maygkzv8fda12b.webp"
-    ],
-    rating: 4.5,
-    reviews: 12,
-    descricao: "Capacete esportivo resistente.",
-    caracteristicas: "Material ABS, ventilação frontal.",
-    tamanho: true
-  },
-  {
-    id: 103,
-    nome: "Norisk FF345 Route Monocolor Preto Fosco",
-    preco: 149.9,
-    videoEntrega: "videos-produto2.mp4",
-    img: "https://i.im.ge/2026/03/22/efZmhC.br-11134207-820md-mlmjc6gi1i4nc0.webp",
-    imgs: [
-      "https://i.im.ge/2026/03/22/efZmhC.br-11134207-820md-mlmjc6gi1i4nc0.webp",
-      "https://i.im.ge/2026/03/22/efZwbq.br-11134207-820lv-mlmjc6gkun0l49.webp",
-      "https://i.im.ge/2026/03/22/efZPaP.br-11134207-820le-mlgtv3obm68415.webp",
-      "https://i.im.ge/2026/03/22/efZC1m.br-11134207-81z1k-mhg9n4m6v40356.webp"
-    ],
-    rating: 4.5,
-    reviews: 12,
-    descricao: "Capacete esportivo resistente.",
-    caracteristicas: "Material ABS, ventilação frontal.",
-    tamanho: true
-  },
-  {
-    id: 104,
-    nome: "NORISK RAZOR FECHADO SPEEDMAX VERDE BRANCO ESPORTIVO ORIGINAL",
-    preco: 149.9,
-    img: "https://i.im.ge/2026/03/22/efZYX0.br-11134207-81zuf-mkjq6nv79koyce.webp",
-    imgs: [
-      "https://i.im.ge/2026/03/22/efZYX0.br-11134207-81zuf-mkjq6nv79koyce.webp",
-      "https://i.im.ge/2026/03/22/efZWAx.br-11134207-7r98o-mb3zwlo5pk0fd6.webp",
-      "https://i.im.ge/2026/03/22/efZZpa.br-11134207-7r98o-mb3zwlo5sd5b13.webp",
-      "https://i.im.ge/2026/03/22/efZV1J.br-11134207-7r98o-mb2l9aqcgs5rab.webp"
-    ],
-    rating: 4.5,
-    reviews: 12,
-    descricao: "Capacete esportivo resistente.",
-    caracteristicas: "Material ABS, ventilação frontal.",
-    tamanho: true
-  },
-  {
-    id: 105,
-    nome: "NORISK RAZOR SHARP PRETO/VERMELHO ORIGINAL + VISEIRA CRISTAL",
-    preco: 149.9,
-    img: "https://i.im.ge/2026/03/22/efZvcF.br-11134207-7r98o-malmafju3kl51e.webp",
-    imgs: [
-      "https://i.im.ge/2026/03/22/efZvcF.br-11134207-7r98o-malmafju3kl51e.webp",
-      "https://i.im.ge/2026/03/22/efZJGK.br-11134207-7r98o-matv9iwnoubz2f.webp",
-      "https://i.im.ge/2026/03/22/efZ479.br-11134207-7r98o-malmafju4z5l36.webp",
-      "https://i.im.ge/2026/03/22/efZBCX.br-11134207-7r98o-malocp6vju6n54.webp"
-    ],
-    rating: 4.5,
-    reviews: 12,
-    descricao: "Capacete esportivo resistente.",
-    caracteristicas: "Material ABS, ventilação frontal.",
-    tamanho: true
-  },
-  {
-    id: 106,
-    nome: "FW3 GTX Fox Grafite com Viseira Solar",
+    id: 6,
+    nome: " FW3 GTX Fox Grafite com Viseira Solar",
     preco: 149.9,
     img: "https://i.im.ge/2026/03/22/efK6rS.br-11134207-81z1k-mfcr7rh9fhmv6f.webp",
     imgs: [
@@ -245,7 +221,7 @@ const maisVendidos = [
     tamanho: true
   },
   {
-    id: 107,
+    id: 7,
     nome: "Fw3 gtx star/fox com viseira solar",
     preco: 149.9,
     img: "https://i.im.ge/2026/03/22/efKgrY.sg-11134201-822wg-mi0jsu7hp98ib8.webp",
@@ -333,7 +309,7 @@ function iniciarAlertaComprasFake() {
 }
 
 // ======================
-// Scroll lock
+// Scroll lock (mobile premium)
 // ======================
 function lockScroll(lock) {
   if (lock) {
@@ -356,7 +332,7 @@ function lockScroll(lock) {
 }
 
 // ======================
-// Estoque
+// Estoque (SESSION)
 // ======================
 [...produtos, ...maisVendidos].forEach((p) => {
   const stock = sessionStorage.getItem(`estoque_${p.id}`);
@@ -365,7 +341,7 @@ function lockScroll(lock) {
 });
 
 // ======================
-// Tempo Promo
+// Tempo Promo (SESSION) - 2h rodando SEM parar
 // ======================
 let tempo = sessionStorage.getItem("tempo_oferta")
   ? Number(sessionStorage.getItem("tempo_oferta"))
@@ -393,9 +369,11 @@ const checkoutForm = document.getElementById("checkout-form");
 const closeCart = document.getElementById("close-cart");
 const closeCartFallback = document.getElementById("close-cart-fallback");
 
+// steps do carrinho
 const stepEntrega = document.getElementById("step-entrega");
 const stepPix = document.getElementById("step-pix");
 
+// pix ui
 const pixTimerEl = document.getElementById("pix-timer");
 const pixCopiaColaEl = document.getElementById("pix-copia-cola");
 const pixCanvas = document.getElementById("pix-qrcode");
@@ -403,8 +381,8 @@ const pixQrImg = document.getElementById("pix-qrcode-img");
 const btnCopiarPix = document.getElementById("btn-copiar-pix");
 const btnJaPaguei = document.getElementById("btn-ja-paguei");
 const pixWarn = document.getElementById("pix-warn");
-const pixStatus = document.getElementById("pix-status");
 
+// modal produto
 const productModal = document.getElementById("product-modal");
 const productContent = document.getElementById("product-content");
 
@@ -424,6 +402,7 @@ const prevImgBtn = document.getElementById("prev-img");
 const nextImgBtn = document.getElementById("next-img");
 const modalImageWrapper = document.querySelector(".modal-image-wrapper");
 
+// vídeo no modal
 let modalVideo = document.getElementById("modal-video");
 let modalVideoSource = document.getElementById("modal-video-source");
 
@@ -540,53 +519,52 @@ function configurarBotaoJaPaguei(pedido) {
 // Status do pagamento
 // ======================
 async function consultarStatusPagamento(pagamentoId) {
-  const resp = await fetch(`${API_BASE}/status-pagamento/${pagamentoId}`);
-  const data = await lerRespostaJsonSegura(resp);
+  const resp = await fetch(`/status-pagamento/${pagamentoId}`);
+  const data = await resp.json();
 
   if (!resp.ok || !data.ok) {
-    throw new Error(
-      data?.detalhe || data?.error || "Erro ao consultar status do pagamento."
-    );
+    throw new Error(data?.detalhe || data?.error || "Erro ao consultar status do pagamento.");
   }
 
   return data;
 }
 
 function atualizarTextoStatusPagamento(status, statusDetail) {
-  if (!pixStatus) return;
+  const el = document.getElementById("pix-status");
+  if (!el) return;
 
   if (status === "approved") {
-    pixStatus.textContent = "✅ Pagamento aprovado!";
-    pixStatus.style.color = "green";
+    el.textContent = "✅ Pagamento aprovado!";
+    el.style.color = "green";
     return;
   }
 
   if (status === "pending") {
-    pixStatus.textContent = "⏳ Aguardando pagamento...";
-    pixStatus.style.color = "#b26b00";
+    el.textContent = "⏳ Aguardando pagamento...";
+    el.style.color = "#b26b00";
     return;
   }
 
   if (status === "in_process") {
-    pixStatus.textContent = "🔄 Pagamento em processamento...";
-    pixStatus.style.color = "#0057b8";
+    el.textContent = "🔄 Pagamento em processamento...";
+    el.style.color = "#0057b8";
     return;
   }
 
   if (status === "rejected") {
-    pixStatus.textContent = `❌ Pagamento rejeitado${statusDetail ? " - " + statusDetail : ""}`;
-    pixStatus.style.color = "red";
+    el.textContent = `❌ Pagamento rejeitado${statusDetail ? " - " + statusDetail : ""}`;
+    el.style.color = "red";
     return;
   }
 
   if (status === "cancelled") {
-    pixStatus.textContent = "❌ Pagamento cancelado.";
-    pixStatus.style.color = "red";
+    el.textContent = "❌ Pagamento cancelado.";
+    el.style.color = "red";
     return;
   }
 
-  pixStatus.textContent = `ℹ️ Status: ${status || "desconhecido"}${statusDetail ? " - " + statusDetail : ""}`;
-  pixStatus.style.color = "#333";
+  el.textContent = `ℹ️ Status: ${status || "desconhecido"}${statusDetail ? " - " + statusDetail : ""}`;
+  el.style.color = "#333";
 }
 
 function iniciarPollingPagamento(pagamentoId) {
@@ -626,13 +604,14 @@ function iniciarPollingPagamento(pagamentoId) {
           btnJaPaguei.style.boxShadow = "0 8px 24px rgba(37, 211, 102, 0.35)";
         }
 
-        if (pixStatus) {
-          pixStatus.textContent = "✅ PAGAMENTO APROVADO! Agora clique no botão abaixo para enviar seu pedido no WhatsApp.";
-          pixStatus.style.color = "green";
-          pixStatus.style.fontWeight = "900";
-          pixStatus.style.fontSize = "18px";
-          pixStatus.style.textAlign = "center";
-          pixStatus.style.marginTop = "12px";
+        const statusEl = document.getElementById("pix-status");
+        if (statusEl) {
+          statusEl.textContent = "✅ PAGAMENTO APROVADO! Agora clique no botão abaixo para enviar seu pedido no WhatsApp.";
+          statusEl.style.color = "green";
+          statusEl.style.fontWeight = "900";
+          statusEl.style.fontSize = "18px";
+          statusEl.style.textAlign = "center";
+          statusEl.style.marginTop = "12px";
         }
 
         clearInterval(pollingPagamento);
@@ -651,7 +630,7 @@ function iniciarPollingPagamento(pagamentoId) {
 }
 
 // ======================
-// Galeria do modal
+// Galeria do modal (dots + 1/4)
 // ======================
 function ensureGalleryUI() {
   if (!modalImageWrapper) return;
@@ -824,7 +803,10 @@ function abrirModal(prod) {
 }
 
 function fecharModalProduto() {
-  if (modalVideo) modalVideo.pause();
+  if (modalVideo) {
+    modalVideo.pause();
+  }
+
   productModal.classList.remove("active");
   lockScroll(false);
 }
@@ -859,7 +841,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 // ======================
-// Swipe
+// Swipe (galeria) - ignora scroll vertical
 // ======================
 let startX = 0;
 let startY = 0;
@@ -899,7 +881,7 @@ if (productContent) {
 }
 
 // ======================
-// Contador global
+// Contador global (2h rolando)
 // ======================
 function iniciarContador() {
   aplicarTextoContador();
@@ -979,11 +961,7 @@ if (addToCartModal) {
     sessionStorage.setItem(`estoque_${produtoSelecionado.id}`, produtoSelecionado.estoque);
 
     const item = { ...produtoSelecionado };
-    if (
-      produtoSelecionado.tamanho &&
-      modalSizeContainer &&
-      modalSizeContainer.style.display !== "none"
-    ) {
+    if (produtoSelecionado.tamanho && modalSizeContainer && modalSizeContainer.style.display !== "none") {
       item.tamanhoEscolhido = modalSize.value;
     }
 
@@ -996,7 +974,7 @@ if (addToCartModal) {
 }
 
 // ======================
-// Carrinho modal
+// Carrinho modal (PASSOS)
 // ======================
 function resetarStepsCarrinho() {
   if (stepEntrega) stepEntrega.classList.remove("hidden");
@@ -1005,10 +983,11 @@ function resetarStepsCarrinho() {
   if (closeCart) closeCart.classList.add("hidden");
   if (closeCartFallback) closeCartFallback.classList.remove("hidden");
 
-  if (pixStatus) {
-    pixStatus.textContent = "⏳ Aguardando pagamento...";
-    pixStatus.style.color = "#b26b00";
-    pixStatus.style.fontWeight = "700";
+  const statusEl = document.getElementById("pix-status");
+  if (statusEl) {
+    statusEl.textContent = "⏳ Aguardando pagamento...";
+    statusEl.style.color = "#b26b00";
+    statusEl.style.fontWeight = "700";
   }
 
   if (btnJaPaguei) {
@@ -1062,7 +1041,7 @@ document.addEventListener("click", (e) => {
 });
 
 // ======================
-// QR Code
+// PASSO 1 → Libera PIX
 // ======================
 async function desenharQRCodeSeguro(textoPix) {
   if (!pixCanvas) return;
@@ -1126,11 +1105,6 @@ async function gerarEExibirPix(dadosEntrega) {
       pixWarn.textContent = "";
     }
 
-    if (pixStatus) {
-      pixStatus.textContent = "⏳ Gerando PIX...";
-      pixStatus.style.color = "#333";
-    }
-
     if (pixCopiaColaEl) {
       pixCopiaColaEl.value = "Gerando PIX...";
     }
@@ -1151,7 +1125,7 @@ async function gerarEExibirPix(dadosEntrega) {
       btnJaPaguei.textContent = "Já paguei";
     }
 
-    const resp = await fetch(`${API_BASE}/criar-pix`, {
+    const resp = await fetch("/criar-pix", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -1164,9 +1138,9 @@ async function gerarEExibirPix(dadosEntrega) {
       })
     });
 
-    const data = await lerRespostaJsonSegura(resp);
+    const data = await resp.json();
 
-    if (!resp.ok || !data.ok) {
+    if (!resp.ok) {
       throw new Error(data?.detalhe || data?.error || "Erro ao gerar PIX.");
     }
 
@@ -1190,9 +1164,7 @@ async function gerarEExibirPix(dadosEntrega) {
     whatsappEnviadoPedidoId = null;
     linkWhatsAppAprovado = "";
 
-    if (pixCopiaColaEl) {
-      pixCopiaColaEl.value = pixText || "";
-    }
+    if (pixCopiaColaEl) pixCopiaColaEl.value = pixText;
 
     if (qrBase64 && pixQrImg) {
       pixQrImg.src = `data:image/png;base64,${qrBase64}`;
@@ -1200,11 +1172,6 @@ async function gerarEExibirPix(dadosEntrega) {
       if (pixCanvas) pixCanvas.style.display = "none";
     } else if (pixText) {
       await desenharQRCodeSeguro(pixText);
-    }
-
-    if (pixStatus) {
-      pixStatus.textContent = "⏳ Aguardando pagamento.";
-      pixStatus.style.color = "#b26b00";
     }
 
     if (pagamentoId) {
@@ -1227,25 +1194,9 @@ async function gerarEExibirPix(dadosEntrega) {
 
     configurarBotaoJaPaguei(pedidoAtual);
   } catch (error) {
-    console.error("Erro ao gerar PIX:", error);
+    console.error(error);
 
     if (pixCopiaColaEl) pixCopiaColaEl.value = "";
-
-    if (pixQrImg) {
-      pixQrImg.style.display = "none";
-      pixQrImg.removeAttribute("src");
-    }
-
-    if (pixCanvas) {
-      pixCanvas.style.display = "none";
-      const ctx = pixCanvas.getContext("2d");
-      ctx.clearRect(0, 0, pixCanvas.width, pixCanvas.height);
-    }
-
-    if (pixStatus) {
-      pixStatus.textContent = "❌ Erro ao gerar pagamento.";
-      pixStatus.style.color = "red";
-    }
 
     if (pixWarn) {
       pixWarn.style.display = "block";
@@ -1297,7 +1248,7 @@ const comentariosClientes = [
     foto: "https://randomuser.me/api/portraits/men/32.jpg",
     estrelas: 5,
     data: "ontem",
-    texto: "promoção funciona rapaziada marchaaaaa",
+    texto: "promoçaõ funciona rapaziada marchaaaaa",
     fotoEntrega: "https://i.postimg.cc/zGBW79Fx/br-11134103-820mh-ml6omd221mvbe9.jpg"
   },
   {
@@ -1305,7 +1256,7 @@ const comentariosClientes = [
     foto: "https://randomuser.me/api/portraits/women/22.jpg",
     estrelas: 5,
     data: "há 4 dias",
-    texto: "top de linha gostei muito <3",
+    texto: "top de linha gostei muito <3 ",
     videoEntrega: "entrega-ana.mp4"
   },
   {
