@@ -6,27 +6,30 @@
   <title>Loja TikTok Shop</title>
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Evita 404 do favicon -->
-  <link
-    rel="icon"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2250%22 font-size=%2250%22>🛒</text></svg>"
-  />
-
   <!-- MercadoPago -->
   <script src="https://sdk.mercadopago.com/js/v2"></script>
 
   <!-- QRCode -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
-
-  <!-- JS principal -->
-  <script src="script.js" defer></script>
 </head>
 <body>
 
   <header>
-    <img src="https://i.im.ge/2026/01/20/GYhUgy.tiktok.png" class="tiktok-icon" alt="TikTok" />
+    <img
+      src="https://i.im.ge/2026/01/20/GYhUgy.tiktok.png"
+      class="tiktok-icon"
+      alt="TikTok"
+      referrerpolicy="no-referrer"
+    />
+
     <h1>TikTok Shop</h1>
-    <img src="https://i.im.ge/2026/01/20/GY9qLJ.ttkshop2-Photoroom.png" class="shop-icon" alt="Shop" />
+
+    <img
+      src="https://i.im.ge/2026/01/20/GY9qLJ.ttkshop2-Photoroom.png"
+      class="shop-icon"
+      alt="Shop"
+      referrerpolicy="no-referrer"
+    />
   </header>
 
   <section class="trust-bar">
@@ -38,7 +41,7 @@
 
   <main>
     <section class="produtos">
-      <h2>🔥 Destaques</h2>
+      <h2>🔥Destaques</h2>
       <div class="lista-produtos" id="lista-produtos"></div>
     </section>
 
@@ -85,15 +88,12 @@
     </div>
   </section>
 
-  <!-- Carrinho flutuante -->
-  <button class="cart-flutuante" id="cart-flutuante" type="button" aria-label="Abrir carrinho">
+  <button class="cart-flutuante" id="cart-flutuante" type="button">
     🛒 <span id="cart-count">0</span>
   </button>
 
-  <!-- Overlay do carrinho -->
   <div class="cart-overlay" id="cart-overlay"></div>
 
-  <!-- Modal do carrinho -->
   <div class="cart-modal" id="cart-modal">
     <div class="cart-header">
       <h3>Seu Carrinho</h3>
@@ -125,7 +125,6 @@
       </div>
     </div>
 
-    <!-- PASSO 1 -->
     <div class="step-box" id="step-entrega">
       <div class="step-title">
         <span class="step-pill">PASSO 1</span>
@@ -177,7 +176,6 @@
       </form>
     </div>
 
-    <!-- PASSO 2 -->
     <div class="step-box hidden" id="step-pix">
       <div class="step-title">
         <span class="step-pill">PASSO 2</span>
@@ -195,22 +193,16 @@
         </div>
 
         <div class="pix-qr">
-          <img
-            id="pix-qrcode-img"
-            alt="QR Code PIX"
-            style="display:none; max-width:220px; width:100%; margin:0 auto;"
-          />
+          <img id="pix-qrcode-img" alt="QR Code PIX" style="display:none; max-width:220px; width:100%; margin:0 auto;" />
           <canvas id="pix-qrcode" width="220" height="220" style="display:none;"></canvas>
         </div>
 
-        <label class="pix-label" for="pix-copia-cola">PIX Copia e Cola</label>
+        <label class="pix-label">PIX Copia e Cola</label>
         <textarea id="pix-copia-cola" readonly></textarea>
 
         <div class="pix-actions">
           <button type="button" id="btn-copiar-pix">Copiar código PIX</button>
-          <button type="button" class="btn-secondary" id="btn-ja-paguei" style="display:none;">
-            Já paguei
-          </button>
+          <button type="button" class="btn-secondary" id="btn-ja-paguei" style="display:none;">Já paguei</button>
         </div>
 
         <div id="pix-status" class="pix-status">⏳ Aguardando pagamento...</div>
@@ -218,7 +210,7 @@
         <div class="pix-safe">
           <div>🔒 Ambiente seguro</div>
           <div>📌 Confirme o valor antes de pagar</div>
-          <div>🧾 Envie o pedido no WhatsApp após aprovação</div>
+          <div>🧾 Envie comprovante no WhatsApp</div>
         </div>
 
         <div class="pix-warn" id="pix-warn" style="display:none;"></div>
@@ -230,7 +222,6 @@
     <button id="close-cart-fallback" class="cart-close fallback" type="button">Fechar</button>
   </div>
 
-  <!-- Modal produto -->
   <div class="product-modal" id="product-modal">
     <div class="product-content" id="product-content">
       <button class="seta esquerda" id="prev-img" type="button">❮</button>
@@ -262,11 +253,11 @@
     </div>
   </div>
 
-  <!-- ALERTA DE COMPRA -->
   <div class="purchase-alert" id="purchase-alert">
     <strong id="purchase-name">Carlos Almeida</strong>
     <span id="purchase-time">fez uma compra há 2 min</span>
   </div>
 
+  <script src="script.js"></script>
 </body>
 </html>
