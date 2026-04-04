@@ -1179,3 +1179,144 @@ main{ padding:20px; }
     max-width:100%;
   }
 }
+
+/* =========================
+   FOOTER / PÁGINAS LEGAIS
+========================= */
+.footer{
+  margin-top:36px;
+  background:linear-gradient(180deg,#0b0b0b 0%, #050505 100%);
+  color:#d8d8d8;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+
+.footer-brand h3,
+.footer-col h4,
+.legal-card h3{
+  margin:0 0 12px;
+  color:#fff;
+}
+
+.footer-brand h3{
+  font-size:24px;
+  font-weight:900;
+}
+
+.footer-brand p,
+.footer-col p,
+.footer-info li,
+.legal-card p,
+.legal-card li{
+  color:#cfcfcf;
+  line-height:1.65;
+}
+
+.footer-links{
+  display:grid;
+  gap:10px;
+}
+
+.footer-links a{
+  color:#fff;
+  text-decoration:none;
+  font-weight:800;
+  transition:color .2s ease, transform .2s ease;
+}
+
+.footer-links a:hover{
+  color:#ff4d85;
+  transform:translateX(3px);
+}
+
+.footer-info{
+  margin:0;
+  padding-left:18px;
+  display:grid;
+  gap:10px;
+}
+
+.footer-badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:16px;
+}
+
+.footer-badges span{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+}
+
+.footer-legal{
+  max-width:1200px;
+  margin:28px auto 0;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+
+.legal-card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.18);
+  scroll-margin-top:110px;
+}
+
+.legal-card ul{
+  margin:12px 0 0;
+  padding-left:18px;
+}
+
+.footer-bottom{
+  max-width:1200px;
+  margin:22px auto 0;
+  padding-top:18px;
+  border-top:1px solid rgba(255,255,255,0.08);
+  text-align:center;
+  color:#a8a8a8;
+  font-size:13px;
+}
+
+@media (max-width: 900px){
+  .footer-legal{
+    grid-template-columns:1fr;
+  }
+}
+
+@media (max-width: 640px){
+  .footer{
+    padding:30px 16px 20px;
+  }
+
+  .footer-container{
+    gap:20px;
+  }
+
+  .footer-brand h3{
+    font-size:22px;
+  }
+
+  .legal-card{
+    padding:18px;
+    border-radius:16px;
+  }
+
+  .footer-badges{
+    gap:8px;
+  }
+
+  .footer-badges span{
+    width:100%;
+    justify-content:center;
+  }
+}

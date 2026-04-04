@@ -3,33 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loja TikTok Shop</title>
+  <title>TikTok Store - Capacetes</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Evita 404 do favicon -->
+  <link
+    rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><text y=%2250%22 font-size=%2250%22>🛒</text></svg>"
+  />
 
   <!-- MercadoPago -->
   <script src="https://sdk.mercadopago.com/js/v2"></script>
 
   <!-- QRCode -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+
+  <!-- JS principal -->
+  <script src="script.js" defer></script>
 </head>
 <body>
 
   <header>
-    <img
-      src="https://i.im.ge/2026/01/20/GYhUgy.tiktok.png"
-      class="tiktok-icon"
-      alt="TikTok"
-      referrerpolicy="no-referrer"
-    />
-
-    <h1>TikTok Shop</h1>
-
-    <img
-      src="https://i.im.ge/2026/01/20/GY9qLJ.ttkshop2-Photoroom.png"
-      class="shop-icon"
-      alt="Shop"
-      referrerpolicy="no-referrer"
-    />
+    <img src="https://i.im.ge/2026/01/20/GYhUgy.tiktok.png" class="tiktok-icon" alt="TikTok" />
+    <h1>TikTok Store</h1>
+    <img src="https://i.im.ge/2026/01/20/GY9qLJ.ttkshop2-Photoroom.png" class="shop-icon" alt="Shop" />
   </header>
 
   <section class="trust-bar">
@@ -41,7 +38,7 @@
 
   <main>
     <section class="produtos">
-      <h2>🔥Destaques</h2>
+      <h2>🔥 Destaques</h2>
       <div class="lista-produtos" id="lista-produtos"></div>
     </section>
 
@@ -88,12 +85,15 @@
     </div>
   </section>
 
-  <button class="cart-flutuante" id="cart-flutuante" type="button">
+  <!-- Carrinho flutuante -->
+  <button class="cart-flutuante" id="cart-flutuante" type="button" aria-label="Abrir carrinho">
     🛒 <span id="cart-count">0</span>
   </button>
 
+  <!-- Overlay do carrinho -->
   <div class="cart-overlay" id="cart-overlay"></div>
 
+  <!-- Modal do carrinho -->
   <div class="cart-modal" id="cart-modal">
     <div class="cart-header">
       <h3>Seu Carrinho</h3>
@@ -125,6 +125,7 @@
       </div>
     </div>
 
+    <!-- PASSO 1 -->
     <div class="step-box" id="step-entrega">
       <div class="step-title">
         <span class="step-pill">PASSO 1</span>
@@ -176,6 +177,7 @@
       </form>
     </div>
 
+    <!-- PASSO 2 -->
     <div class="step-box hidden" id="step-pix">
       <div class="step-title">
         <span class="step-pill">PASSO 2</span>
@@ -193,16 +195,22 @@
         </div>
 
         <div class="pix-qr">
-          <img id="pix-qrcode-img" alt="QR Code PIX" style="display:none; max-width:220px; width:100%; margin:0 auto;" />
+          <img
+            id="pix-qrcode-img"
+            alt="QR Code PIX"
+            style="display:none; max-width:220px; width:100%; margin:0 auto;"
+          />
           <canvas id="pix-qrcode" width="220" height="220" style="display:none;"></canvas>
         </div>
 
-        <label class="pix-label">PIX Copia e Cola</label>
+        <label class="pix-label" for="pix-copia-cola">PIX Copia e Cola</label>
         <textarea id="pix-copia-cola" readonly></textarea>
 
         <div class="pix-actions">
           <button type="button" id="btn-copiar-pix">Copiar código PIX</button>
-          <button type="button" class="btn-secondary" id="btn-ja-paguei" style="display:none;">Já paguei</button>
+          <button type="button" class="btn-secondary" id="btn-ja-paguei" style="display:none;">
+            Já paguei
+          </button>
         </div>
 
         <div id="pix-status" class="pix-status">⏳ Aguardando pagamento...</div>
@@ -210,7 +218,7 @@
         <div class="pix-safe">
           <div>🔒 Ambiente seguro</div>
           <div>📌 Confirme o valor antes de pagar</div>
-          <div>🧾 Envie comprovante no WhatsApp</div>
+          <div>🧾 Envie o pedido no WhatsApp após aprovação</div>
         </div>
 
         <div class="pix-warn" id="pix-warn" style="display:none;"></div>
@@ -222,6 +230,7 @@
     <button id="close-cart-fallback" class="cart-close fallback" type="button">Fechar</button>
   </div>
 
+  <!-- Modal produto -->
   <div class="product-modal" id="product-modal">
     <div class="product-content" id="product-content">
       <button class="seta esquerda" id="prev-img" type="button">❮</button>
@@ -253,11 +262,90 @@
     </div>
   </div>
 
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <h3>TikTok Store</h3>
+        <p>Sua loja online de capacetes com pagamento via PIX, atendimento rápido e foco em segurança na compra.</p>
+        <div class="footer-badges">
+          <span>🔒 Compra protegida</span>
+          <span>📦 Envio com rastreio</span>
+          <span>💬 Suporte via WhatsApp</span>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Institucional</h4>
+        <nav class="footer-links">
+          <a href="#sobre">Sobre</a>
+          <a href="#contato">Contato</a>
+          <a href="#trocas-entrega-pagamento">Trocas, Entrega e Pagamento</a>
+          <a href="#politica-privacidade">Política de Privacidade</a>
+          <a href="#termos-uso">Termos de Uso</a>
+        </nav>
+      </div>
+
+      <div class="footer-col">
+        <h4>Atendimento</h4>
+        <ul class="footer-info">
+          <li>⏰ Atendimento em horário comercial</li>
+          <li>📲 Suporte por WhatsApp informado no checkout</li>
+          <li>📍 Atendimento online para todo o Brasil</li>
+          <li>🚚 Envio após confirmação do pagamento</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-legal">
+      <section class="legal-card" id="sobre">
+        <h3>Sobre</h3>
+        <p>A TikTok Store é uma loja online focada na venda de capacetes e acessórios, com atendimento digital, pagamento seguro e envio para todo o Brasil. Nosso objetivo é oferecer produtos com boa apresentação, preço competitivo e um processo de compra simples.</p>
+        <p>Trabalhamos para manter as informações dos produtos, valores e condições de envio sempre atualizadas. Em caso de dúvida antes da compra, o cliente pode entrar em contato pelos canais informados nesta página.</p>
+      </section>
+
+      <section class="legal-card" id="contato">
+        <h3>Contato</h3>
+        <p>Para dúvidas sobre pedidos, pagamento, envio, trocas ou suporte geral, fale com a nossa equipe pelos canais oficiais disponibilizados no site e no checkout.</p>
+        <ul>
+          <li><strong>WhatsApp:</strong> número informado no atendimento da loja</li>
+          <li><strong>E-mail:</strong> atendimento@tiktokstore.com.br</li>
+          <li><strong>Horário de atendimento:</strong> segunda a sábado, em horário comercial</li>
+        </ul>
+      </section>
+
+      <section class="legal-card" id="trocas-entrega-pagamento">
+        <h3>Trocas / Entrega / Pagamento</h3>
+        <p><strong>Pagamento:</strong> os pagamentos são processados por meio de PIX, com confirmação automática de status quando disponível no sistema.</p>
+        <p><strong>Entrega:</strong> o envio é realizado após a confirmação do pagamento. O prazo de entrega pode variar conforme a região do cliente e a transportadora ou serviço postal utilizado.</p>
+        <p><strong>Trocas e devoluções:</strong> caso o produto apresente defeito, avaria ou divergência em relação ao pedido, o cliente deverá entrar em contato com a loja em até 7 dias corridos após o recebimento para análise e orientações. Produtos com sinais de mau uso podem não ser elegíveis para troca.</p>
+      </section>
+
+      <section class="legal-card" id="politica-privacidade">
+        <h3>Política de Privacidade</h3>
+        <p>A TikTok Store coleta os dados fornecidos pelo cliente no momento da compra, como nome, e-mail, telefone e endereço, exclusivamente para processar pedidos, realizar atendimento e viabilizar a entrega.</p>
+        <p>As informações também podem ser usadas para comunicação sobre o pedido, prevenção a fraudes e melhoria da experiência no site. Não comercializamos dados pessoais. Os dados poderão ser compartilhados apenas com serviços essenciais à operação, como meios de pagamento, hospedagem e envio.</p>
+        <p>Ao navegar no site, tecnologias como cookies podem ser utilizadas para funcionamento da loja, análise de acesso e futuras ações de publicidade, quando aplicável.</p>
+      </section>
+
+      <section class="legal-card" id="termos-uso">
+        <h3>Termos de Uso</h3>
+        <p>Ao acessar e utilizar a TikTok Store, o usuário concorda em fornecer informações verdadeiras no checkout e em utilizar o site apenas para fins lícitos.</p>
+        <p>Os preços, promoções, disponibilidade de estoque e condições comerciais podem ser alterados sem aviso prévio. A finalização do pedido depende da confirmação de pagamento e da validação dos dados informados.</p>
+        <p>A loja não se responsabiliza por informações incorretas preenchidas pelo cliente, como endereço, e-mail, telefone ou outros dados que possam comprometer o processamento do pedido.</p>
+      </section>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 TikTok Store - Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+
+  <!-- ALERTA DE COMPRA -->
   <div class="purchase-alert" id="purchase-alert">
     <strong id="purchase-name">Carlos Almeida</strong>
     <span id="purchase-time">fez uma compra há 2 min</span>
   </div>
 
-  <script src="script.js"></script>
 </body>
 </html>
